@@ -1,6 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include <ostream>
 template <class T>
 class Queue
 {
@@ -11,6 +12,7 @@ class Queue
 		virtual void enqueue(T elem) = 0;
 		virtual T dequeue() = 0; 
 		virtual T peek() const = 0;
+		virtual void print(std::ostream& os) const = 0;
 
 		Queue();
 		Queue(int len);
@@ -47,5 +49,11 @@ Queue<T>& Queue<T>::operator+=(const T& t)
 	return *this;
 }
 
+template <typename T>
+std::ostream& operator<< (std::ostream& os, const Queue<T>& q)
+{
+    q.print(os);
+    return os;
+}
 
 #endif

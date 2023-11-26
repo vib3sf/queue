@@ -32,6 +32,7 @@ class ListQueue : public Queue<T>
 		virtual void enqueue(T elem);
 		virtual T peek() const;
 		virtual T dequeue(); 
+		virtual void print(std::ostream& os) const;
 
 		template <class U>
 		friend ListQueue<U> operator+(const ListQueue<U> &a, const ListQueue<U> &b);
@@ -97,6 +98,14 @@ T ListQueue<T>::dequeue()
 
 	this->len--;
 	return data_tmp;
+}
+
+template <class T>
+void ListQueue<T>::print(std::ostream& os) const
+{
+	for(Node<T> *node = first; node; node = node->next)
+		os << node->data << ' ';
+	os << '\n';
 }
 
 template <class T>

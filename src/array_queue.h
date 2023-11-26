@@ -2,6 +2,7 @@
 #define ARRAY_QUEUE_H
 
 #include "queue.h"
+#include <iostream>
 #include <stdlib.h>
 
 template <class T>
@@ -24,6 +25,7 @@ class ArrayQueue : public Queue<T>
 		virtual void enqueue(T elem);
 		virtual T dequeue(); 
 		virtual T peek() const;
+		virtual void print(std::ostream& os) const;
 
 		template <class U>
 		friend ArrayQueue<U> operator+(const ArrayQueue<U> &a, const ArrayQueue<U> &b);
@@ -111,12 +113,20 @@ T ArrayQueue<T>::dequeue()
 }
 
 template <class T>
+void ArrayQueue<T>::print(std::ostream& os) const
+{
+	for(int i = 0; i < this->len; i++)
+		os << array[i] << ' ';
+	os << '\n';
+}
+
+template <class T>
 ArrayQueue<T> operator+(const ArrayQueue<T> &a, const ArrayQueue<T> &b)
 {
 	int size = b.len + a.len;
 	ArrayQueue<T> queue(size);
 	for(int i = 0; i < size; i++)
-		queue.array[i] = a.len < i ? a.array[i] : a.array[i];
+		queue.array[i] = a.len > i ? a.array[i] : b.array[i - size + b.len];
 
 	return queue;
 }
