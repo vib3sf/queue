@@ -1,6 +1,9 @@
 #ifndef LIST_QUEUE_H
 #define LIST_QUEUE_H
 
+template <class>
+class ArrayQueue;
+
 #include "queue.h"
 #include <stdlib.h>
 #include <iostream>
@@ -21,12 +24,14 @@ Node<T>::Node(T data) : data(data), next(0)
 template <class T>
 class ListQueue : public Queue<T>
 {
+	friend class ArrayQueue<T>;
 	private:
 		Node<T> *first;
 		Node<T> *last;
 	public:
 		ListQueue();
 		ListQueue(const ListQueue& l);
+		ListQueue(ArrayQueue<T> a);
 		~ListQueue();
 
 		virtual void enqueue(T elem);
@@ -55,6 +60,15 @@ ListQueue<T>::ListQueue(const ListQueue& l) :
 }
 
 template <class T>
+ListQueue<T>::ListQueue(ArrayQueue<T> a) :
+	Queue<T>(a.len), first(new Node(a.array[0]))
+{
+	Node<T> *node = first;
+	for(int i = 1; i < a.len; i++, node = node->next)
+		node->next = new Node(a.array[i]);
+}
+
+template <class T>
 ListQueue<T>::~ListQueue<T>()
 {
 	Node<T> *next;
@@ -71,9 +85,11 @@ void ListQueue<T>::enqueue(T elem)
 	Node<T> *node = new Node<T>(elem);
 	if(!first)
 		first = last = node;
-
-	last->next = node;
-	last = node;
+	else 
+	{
+		last->next = node;
+		last = node;
+	}
 
 	this->len++;
 }
@@ -118,7 +134,7 @@ ListQueue<T> operator+(const ListQueue<T> &a, const ListQueue<T> &b)
 	q_node = new Node(node->data);
 	queue.first = q_node;
 
-	while(node || !first_passed)
+	while((node = node->next) || !first_passed)
 	{
 		if(!node)
 		{
@@ -127,8 +143,6 @@ ListQueue<T> operator+(const ListQueue<T> &a, const ListQueue<T> &b)
 		}
 
 		q_node->next = new Node(node->data);
-
-		node = node->next;
 		q_node = q_node->next;
 	}
 	

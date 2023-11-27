@@ -2,15 +2,16 @@
 #define ARRAY_QUEUE_H
 
 #include "queue.h"
+#include "list_queue.h"
 #include <iostream>
 #include <stdlib.h>
 
 template <class T>
 class ArrayQueue : public Queue<T>
 {
+	friend class ListQueue<T>;
 	private:
 		int arr_size;
-		int expend_mod;
 		T *array;
 
 		inline bool array_is_full();
@@ -20,6 +21,8 @@ class ArrayQueue : public Queue<T>
 		ArrayQueue();
 		ArrayQueue(int arr_size);
 		ArrayQueue(const ArrayQueue& a);
+		ArrayQueue(ListQueue<T> l);
+		ArrayQueue(bool a);
 		~ArrayQueue();
 
 		virtual void enqueue(T elem);
@@ -28,18 +31,18 @@ class ArrayQueue : public Queue<T>
 		virtual void print(std::ostream& os) const;
 
 		template <class U>
-		friend ArrayQueue<U> operator+(const ArrayQueue<U> &a, const ArrayQueue<U> &b);
+		friend ArrayQueue<U> operator+(
+				const ArrayQueue<U> &a, ArrayQueue<U> &b);
 };
 
 template <class T>
 ArrayQueue<T>::ArrayQueue() : 
-	arr_size(4), expend_mod(2), array(new T[arr_size])
+	arr_size(4), array(new T[arr_size])
 { }
 
 template <class T>
 ArrayQueue<T>::ArrayQueue(int arr_size) : 
-	Queue<T>(arr_size), arr_size(arr_size), 
-	expend_mod(2), array(new T[arr_size])
+	Queue<T>(arr_size), arr_size(arr_size), array(new T[arr_size])
 { }
 
 template <class T>
@@ -48,6 +51,15 @@ ArrayQueue<T>::ArrayQueue(const ArrayQueue& a) :
 {
 	for(int i = 0; i < this->len; i++)
 		array[i] = a.array[i];
+}
+
+template <class T>
+ArrayQueue<T>::ArrayQueue(ListQueue<T> a) :
+	Queue<T>(a.len), arr_size(a.len), array(new T[arr_size])
+{
+	int i = 0;
+	for(Node<T> *node = a.first; node; node = node->next, i++)
+		array[i] = node->data;
 }
 
 template <class T>
@@ -78,7 +90,7 @@ void ArrayQueue<T>::enqueue(T elem)
 {
 	if(array_is_full())
 	{
-		arr_size *= expend_mod;
+		arr_size *= 2;
 		resize_array(arr_size, this->len);
 	}
 
@@ -103,9 +115,9 @@ T ArrayQueue<T>::dequeue()
 		array[i - 1] = array[i];
 	this->len--;
 
-	if(this->len < arr_size / expend_mod / 2)
+	if(this->len < arr_size / 4)
 	{
-		arr_size /= expend_mod;
+		arr_size /= 2;
 		resize_array(arr_size, this->len);
 	}
 
@@ -121,7 +133,7 @@ void ArrayQueue<T>::print(std::ostream& os) const
 }
 
 template <class T>
-ArrayQueue<T> operator+(const ArrayQueue<T> &a, const ArrayQueue<T> &b)
+ArrayQueue<T> operator+(const ArrayQueue<T> &a, ArrayQueue<T> &b)
 {
 	int size = b.len + a.len;
 	ArrayQueue<T> queue(size);
@@ -130,6 +142,7 @@ ArrayQueue<T> operator+(const ArrayQueue<T> &a, const ArrayQueue<T> &b)
 
 	return queue;
 }
+
 
 #endif
  
