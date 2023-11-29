@@ -2,8 +2,9 @@
 #include "list_queue.h"
 #include "queue.h"
 
-#include <cstdio>
+#include <cstdlib>
 #include <map>
+#include <stdexcept>
 #include <vector>
 #include <cstring>
 #include <string>
@@ -100,6 +101,34 @@ void remove_var(const std::vector<std::string> &args,
 		variables.erase(args[1]);
 }
 
+void append_queue(const std::vector<std::string> &args, 
+		std::map<std::string, Queue<std::string> *> &variables)
+{
+	if(!check_arg_count("append", "a <var name to> <var name from>", 
+				args.size(), 3))
+		return;
+
+	if(var_check(args[1], variables) && var_check(args[2], variables))
+		*variables[args[1]] += *variables[args[2]];
+}
+
+void multiple(const std::vector<std::string> &args, 
+		std::map<std::string, Queue<std::string> *> &variables)
+{
+	if(!check_arg_count("multiple", "m <var name> <multiplier>", 
+				args.size(), 3))
+		return;
+
+	try
+	{
+		*variables[args[1]] *= stoi(args[2]);
+	}
+	catch(std::invalid_argument &e)
+	{
+		std::cout << "Invalid multipler\n";
+	}
+}
+
 void execute_command(const std::vector<std::string> &args, 
 		std::map<std::string, Queue<std::string> *> &variables)
 {
@@ -117,6 +146,12 @@ void execute_command(const std::vector<std::string> &args,
 
 	else if(!args[0].compare("r"))
 		remove_var(args, variables);
+
+	else if(!args[0].compare("a"))
+		append_queue(args, variables);
+
+	else if(!args[0].compare("m"))
+		multiple(args, variables);
 
 	else 
 		std::cout << "Wrong command\n";

@@ -24,7 +24,6 @@ Node<T>::Node(T data) : data(data), next(0)
 template <class T>
 class ListQueue : public Queue<T>
 {
-	friend class ArrayQueue<T>;
 	private:
 		Node<T> *first;
 		Node<T> *last;
@@ -38,9 +37,7 @@ class ListQueue : public Queue<T>
 		virtual T peek() const;
 		virtual T dequeue(); 
 		virtual void print(std::ostream& os) const;
-
-		template <class U>
-		friend ListQueue<U> operator+(const ListQueue<U> &a, const ListQueue<U> &b);
+		virtual ListQueue<T> *clone() const;
 };
 
 template <class T>
@@ -49,7 +46,7 @@ ListQueue<T>::ListQueue() : first(0), last(first)
 
 template <class T>
 ListQueue<T>::ListQueue(const ListQueue& l) :
-	Queue<T>(l.len), first(l.first ? new Node(l.first->data) : 0)
+	Queue<T>(l), first(l.first ? new Node(l.first->data) : 0)
 {
 	Node<T> *tmp = first;
 
@@ -57,15 +54,6 @@ ListQueue<T>::ListQueue(const ListQueue& l) :
 		tmp->next = new Node<T>(node->data);
 
 	last = tmp;
-}
-
-template <class T>
-ListQueue<T>::ListQueue(ArrayQueue<T> a) :
-	Queue<T>(a.len), first(new Node(a.array[0]))
-{
-	Node<T> *node = first;
-	for(int i = 1; i < a.len; i++, node = node->next)
-		node->next = new Node(a.array[i]);
 }
 
 template <class T>
@@ -125,29 +113,9 @@ void ListQueue<T>::print(std::ostream& os) const
 }
 
 template <class T>
-ListQueue<T> operator+(const ListQueue<T> &a, const ListQueue<T> &b)
+ListQueue<T> *ListQueue<T>::clone() const
 {
-	ListQueue<T> queue;
-	Node<T> *node = a.first, *q_node;
-	bool first_passed = false;
-
-	q_node = new Node(node->data);
-	queue.first = q_node;
-
-	while((node = node->next) || !first_passed)
-	{
-		if(!node)
-		{
-			node = b.first;
-			first_passed = true;
-		}
-
-		q_node->next = new Node(node->data);
-		q_node = q_node->next;
-	}
-	
-	queue.len = a.len + b.len;
-	return queue;
+	return new ListQueue(*this);
 }
 
 #endif

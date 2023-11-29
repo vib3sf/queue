@@ -9,7 +9,6 @@
 template <class T>
 class ArrayQueue : public Queue<T>
 {
-	friend class ListQueue<T>;
 	private:
 		int arr_size;
 		T *array;
@@ -21,7 +20,6 @@ class ArrayQueue : public Queue<T>
 		ArrayQueue();
 		ArrayQueue(int arr_size);
 		ArrayQueue(const ArrayQueue& a);
-		ArrayQueue(ListQueue<T> l);
 		ArrayQueue(bool a);
 		~ArrayQueue();
 
@@ -29,10 +27,7 @@ class ArrayQueue : public Queue<T>
 		virtual T dequeue(); 
 		virtual T peek() const;
 		virtual void print(std::ostream& os) const;
-
-		template <class U>
-		friend ArrayQueue<U> operator+(
-				const ArrayQueue<U> &a, ArrayQueue<U> &b);
+		virtual ArrayQueue<T> *clone() const;
 };
 
 template <class T>
@@ -47,19 +42,10 @@ ArrayQueue<T>::ArrayQueue(int arr_size) :
 
 template <class T>
 ArrayQueue<T>::ArrayQueue(const ArrayQueue& a) : 
-	Queue<T>(a.len), arr_size(a.arr_size), array(new T[arr_size])
+	Queue<T>(a), arr_size(a.arr_size), array(new T[arr_size])
 {
 	for(int i = 0; i < this->len; i++)
 		array[i] = a.array[i];
-}
-
-template <class T>
-ArrayQueue<T>::ArrayQueue(ListQueue<T> a) :
-	Queue<T>(a.len), arr_size(a.len), array(new T[arr_size])
-{
-	int i = 0;
-	for(Node<T> *node = a.first; node; node = node->next, i++)
-		array[i] = node->data;
 }
 
 template <class T>
@@ -133,16 +119,9 @@ void ArrayQueue<T>::print(std::ostream& os) const
 }
 
 template <class T>
-ArrayQueue<T> operator+(const ArrayQueue<T> &a, ArrayQueue<T> &b)
+ArrayQueue<T> *ArrayQueue<T>::clone() const
 {
-	int size = b.len + a.len;
-	ArrayQueue<T> queue(size);
-	for(int i = 0; i < size; i++)
-		queue.array[i] = a.len > i ? a.array[i] : b.array[i - size + b.len];
-
-	return queue;
+	return new ArrayQueue(*this);
 }
 
-
 #endif
- 
