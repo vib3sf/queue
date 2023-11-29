@@ -9,10 +9,23 @@
 #include <cstring>
 #include <string>
 
-bool check_arg_count(std::string cmd, std::string right_usage, int arg_count, 
-		int right_count)
+struct Handler
 {
-	if(arg_count != right_count)
+	void (*func) (const std::vector<std::string> &, 
+		std::map<std::string, Queue<std::string> *> &);
+
+	std::string full_name;
+	std::string short_name;
+	std::string prompt;
+
+	int right_count;
+	bool more_than;
+};
+
+bool check_arg_count(std::string cmd, std::string right_usage, int arg_count, 
+		int right_count, bool more_than = false)
+{
+	if(arg_count != right_count && !(more_than && arg_count >= right_count))
 	{
 		std::cout << "Usage of " << cmd << ": " << right_usage << "\n";
 		return false;
@@ -64,11 +77,13 @@ bool var_check(const std::string &var_name,
 void enqueue(const std::vector<std::string> &args, 
 		std::map<std::string, Queue<std::string> *> &variables)
 {
-	if(!check_arg_count("enqueue", "e <var name> <value>", args.size(), 3))
+	if(!check_arg_count("enqueue", "e <var name> <values ...>", 
+				args.size(), 3, true))
 		return;
 
 	if(var_check(args[1], variables))
-		*variables[args[1]] += args[2];
+		for(int i = 2; i < (int)args.size(); i++)
+			*variables[args[1]] += args[i];
 }
 
 void dequeue(const std::vector<std::string> &args, 
@@ -130,29 +145,12 @@ void multiple(const std::vector<std::string> &args,
 }
 
 void execute_command(const std::vector<std::string> &args, 
-		std::map<std::string, Queue<std::string> *> &variables)
+		std::map<std::string, Queue<std::string> *> &variables, 
+		std::map<std::string, void (*) (const std::vector<std::string> &, 
+		std::map<std::string, Queue<std::string> *> &)> &handlers)
 {
-	if(!args[0].compare("c"))
-		create_var(args, variables);
-
-	else if(!args[0].compare("e"))
-		enqueue(args, variables);
-
-	else if(!args[0].compare("d"))
-		dequeue(args, variables);
-
-	else if(!args[0].compare("p"))
-		print_var(args, variables);
-
-	else if(!args[0].compare("r"))
-		remove_var(args, variables);
-
-	else if(!args[0].compare("a"))
-		append_queue(args, variables);
-
-	else if(!args[0].compare("m"))
-		multiple(args, variables);
-
+	if(handlers.count(args[0]))
+		handlers[args[0]](args, variables);
 	else 
 		std::cout << "Wrong command\n";
 }
@@ -175,17 +173,34 @@ std::vector<std::string> split_input(const std::string &input)
 	return res;
 }
 
+void init_handlers(std::map<std::string, void (*) (const std::vector<std::string> &, 
+		std::map<std::string, Queue<std::string> *> &)> &handlers)
+{
+	handlers["c"] = create_var;
+	handlers["e"] = enqueue;
+	handlers["d"] = dequeue;
+	handlers["p"] = print_var;
+	handlers["r"] = remove_var;
+	handlers["a"] = append_queue;
+	handlers["m"] = multiple;
+}
+
 int main()
 {
 	std::map<std::string, Queue<std::string> *> variables;
+
+	std::map<std::string, void (*) (const std::vector<std::string> &, 
+		std::map<std::string, Queue<std::string> *> &)> handlers;
+
 	std::string input;
 
+	init_handlers(handlers);
 	while(true)
 	{
 		std::getline(std::cin, input);
 		std::vector<std::string> args = split_input(input);
 		
-		execute_command(args, variables);
+		execute_command(args, variables, handlers);
 	}
 	
 	return 0;
