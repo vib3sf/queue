@@ -1,2 +1,18 @@
-queue: src/main.cpp src/array_queue.h src/queue.h src/list_queue.h
-	g++ -Wall -g src/main.cpp -o queue
+TARGET = queue
+
+CC = g++
+CFLAGS = -Wall -g
+
+SRCPREFIX = ./src/
+
+SRC = $(filter-out $(SRCPREFIX)main.cpp, $(wildcard $(SRCPREFIX)*.cpp))
+
+$(TARGET): $(SRCPREFIX)main.cpp
+	$(CC) $(CFLAGS) $^ -o $@
+
+deps.mk: $(SRC)
+	$(CC) -MM $^ > $@
+
+clean:
+	rm -rf $(TARGET)
+

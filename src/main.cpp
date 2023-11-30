@@ -175,21 +175,33 @@ std::vector<std::string> split_input(const std::string &input)
 
 void init_handlers(std::map<std::string, Handler> &handlers)
 {
-	handlers["c"] = Handler(create, "create", "c <aq/lq> <var name> <init values ...>(optional)", 3, true);
-	handlers["e"] = Handler(enqueue, "enqueue", "e <var name> <values ...>", 3, true);
-	handlers["d"] = Handler(dequeue, "dequeue", "d <var name>", 2);
-	handlers["p"] = Handler(print_var, "print", "p <var name>", 2);
-	handlers["r"] = Handler(remove, "remove", "r <var name>", 2);
-	handlers["a"] = Handler(append, "append", "a <var name to> <var name from>", 3);
-	handlers["m"] = Handler(multiple, "multiple", "m <var name> <multiplier>", 3);
+	handlers["c"] = Handler(create, "create", 
+			"c <aq/lq> <var name> <init values ...>(optional)", 3, true);
+
+	handlers["e"] = Handler(enqueue, "enqueue", 
+			"e <var name> <values ...>", 3, true);
+
+	handlers["d"] = Handler(dequeue, 
+			"dequeue", "d <var name>", 2);
+
+	handlers["p"] = Handler(print_var, 
+			"print", "p <var name>", 2);
+
+	handlers["r"] = Handler(remove, 
+			"remove", "r <var name>", 2);
+
+	handlers["a"] = Handler(append, "append", 
+			"a <var name to> <var name from>", 3);
+
+	handlers["m"] = Handler(multiple, "multiple", 
+			"m <var name> <multiplier>", 3);
 }
 
 int main()
 {
+	
 	std::map<std::string, Queue<std::string> *> variables;
-
 	std::map<std::string, Handler> handlers;
-
 	std::string input;
 
 	init_handlers(handlers);
