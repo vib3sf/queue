@@ -94,7 +94,8 @@ template <class T>
 T ArrayQueue<T>::dequeue()
 {
 	if(this->is_empty())
-		exit(1);
+		throw "ArrayQueue is empty.\n";
+
 	T tmp = array[0];
 
 	for(int i = 1; i < this->len; i++)

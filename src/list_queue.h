@@ -92,7 +92,7 @@ template <class T>
 T ListQueue<T>::dequeue()
 {
 	if(this->is_empty())
-		exit(1);
+		throw "ListQueue is empty.\n";
 
 	Node<T> *tmp = first;
 	T data_tmp = tmp->data;

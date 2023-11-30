@@ -95,8 +95,15 @@ void enqueue(const std::vector<std::string> &args,
 void dequeue(const std::vector<std::string> &args, 
 		std::map<std::string, Queue<std::string> *> &variables)
 {
-	if(var_check(args[1], variables))
-		std::cout << variables[args[1]]->dequeue() << '\n';
+	try
+	{
+		if(var_check(args[1], variables))
+			std::cout << variables[args[1]]->dequeue() << '\n';
+	}
+	catch(const char *e)
+	{
+		std::cout << e;
+	}
 }
 
 void print_var(const std::vector<std::string> &args, 

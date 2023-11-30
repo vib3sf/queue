@@ -5,13 +5,10 @@ CFLAGS = -Wall -g
 
 SRCPREFIX = ./src/
 
-SRC = $(filter-out $(SRCPREFIX)main.cpp, $(wildcard $(SRCPREFIX)*.cpp))
+SRC = $(wildcard $(SRCPREFIX)*.h)
 
-$(TARGET): $(SRCPREFIX)main.cpp
-	$(CC) $(CFLAGS) $^ -o $@
-
-deps.mk: $(SRC)
-	$(CC) -MM $^ > $@
+$(TARGET): $(SRCPREFIX)main.cpp $(SRC)
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm -rf $(TARGET)
