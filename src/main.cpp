@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring>
 #include <string>
+#include <chrono>
 
 struct Handler
 {
@@ -27,8 +28,12 @@ struct Handler
 			std::string prompt,
 			int right_count,
 			bool more_than = false) 
-		: func(func), name(full_name), prompt(prompt), 
-		right_count(right_count), more_than(more_than)
+		: 
+		func(func), 
+		name(full_name), 
+		prompt(prompt), 
+		right_count(right_count), 
+		more_than(more_than)
 	{}
 };
 
@@ -148,13 +153,21 @@ void handle(const std::vector<std::string> &args,
 				handler.right_count, handler.more_than))
 		return;
 
+	std::chrono::steady_clock::time_point 
+		begin = std::chrono::steady_clock::now();
+
 	handler.func(args, variables);
+
+	std::chrono::steady_clock::time_point 
+		end = std::chrono::steady_clock::now();
+
+	std::cout << "Time taken = " << std::chrono::duration_cast
+		<std::chrono::microseconds>(end - begin).count() << "ms\n";
 }
 
 void execute_command(const std::vector<std::string> &args, 
 		std::map<std::string, Queue<std::string> *> &variables, 
 		std::map<std::string, Handler> &handlers)
-
 {
 	if(handlers.count(args[0]))
 		handle(args, variables, handlers[args[0]]);

@@ -27,6 +27,9 @@ class ListQueue : public Queue<T>
 	private:
 		Node<T> *first;
 		Node<T> *last;
+		virtual void print(std::ostream& os) const;
+		virtual ListQueue<T> *clone() const;
+
 	public:
 		ListQueue();
 		ListQueue(const ListQueue& l);
@@ -36,8 +39,6 @@ class ListQueue : public Queue<T>
 		virtual void enqueue(T elem);
 		virtual T peek() const;
 		virtual T dequeue(); 
-		virtual void print(std::ostream& os) const;
-		virtual ListQueue<T> *clone() const;
 };
 
 template <class T>

@@ -15,6 +15,8 @@ class ArrayQueue : public Queue<T>
 
 		inline bool array_is_full();
 		void resize_array(int new_size, int cp_size);
+		virtual void print(std::ostream& os) const;
+		virtual ArrayQueue<T> *clone() const;
 
 	public:
 		ArrayQueue();
@@ -26,8 +28,6 @@ class ArrayQueue : public Queue<T>
 		virtual void enqueue(T elem);
 		virtual T dequeue(); 
 		virtual T peek() const;
-		virtual void print(std::ostream& os) const;
-		virtual ArrayQueue<T> *clone() const;
 };
 
 template <class T>

@@ -8,22 +8,27 @@ class Queue
 	protected:
 		int len;
 
+		virtual Queue<T> *clone() const = 0;
+		virtual void print(std::ostream& os) const = 0;
+
 	public:
 		virtual void enqueue(T elem) = 0;
 		virtual T dequeue() = 0; 
 		virtual T peek() const = 0;
-		virtual void print(std::ostream& os) const = 0;
-		virtual Queue<T> *clone() const = 0;
 
 		Queue();
 		Queue(int len);
 		Queue(const Queue& q);
+		virtual ~Queue() {}
 
 		inline int size() const;
 		inline bool is_empty() const;
 		const Queue& operator+=(const T& t);
 		const Queue& operator+=(const Queue<T> &q);
 		const Queue& operator*=(int mul);
+
+		template <class U>
+		friend std::ostream& operator<< (std::ostream& os, const Queue<U>& q);
 };
 
 template <typename T>
