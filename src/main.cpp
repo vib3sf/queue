@@ -111,11 +111,18 @@ void dequeue(const std::vector<std::string> &args,
 	}
 }
 
-void print_var(const std::vector<std::string> &args, 
+void print(const std::vector<std::string> &args, 
 		std::map<std::string, Queue<std::string> *> &variables)
 {
 	if(var_check(args[1], variables))
 		std::cout << *variables[args[1]];
+}
+
+void len(const std::vector<std::string> &args, 
+		std::map<std::string, Queue<std::string> *> &variables)
+{
+	if(var_check(args[1], variables))
+		std::cout << variables[args[1]]->size() << '\n';
 }
 
 void remove(const std::vector<std::string> &args, 
@@ -204,8 +211,11 @@ void init_handlers(std::map<std::string, Handler> &handlers)
 	handlers["d"] = Handler(dequeue, 
 			"dequeue", "d <var name>", 2);
 
-	handlers["p"] = Handler(print_var, 
+	handlers["p"] = Handler(print, 
 			"print", "p <var name>", 2);
+
+	handlers["l"] = Handler(len, 
+			"length", "l <var name>", 2);
 
 	handlers["r"] = Handler(remove, 
 			"remove", "r <var name>", 2);
@@ -219,7 +229,6 @@ void init_handlers(std::map<std::string, Handler> &handlers)
 
 int main()
 {
-	
 	std::map<std::string, Queue<std::string> *> variables;
 	std::map<std::string, Handler> handlers;
 	std::string input;
